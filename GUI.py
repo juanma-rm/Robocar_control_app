@@ -22,7 +22,8 @@ from typing import Tuple
 #==============================================================================
 
 DEBUG = False
-TIMEOUT_GUI_MS = 250
+TIMEOUT_GUI_MS = 100
+TIMEOUT_SERVER_MS = 2*TIMEOUT_GUI_MS    # Time above server lag is considered
 
 #==============================================================================
 # Function definitions
@@ -203,7 +204,7 @@ def gui_main( queue_2_car:Queue(1), queue_from_car:Queue(1),
     time_ms_last_update = _time_now_ms()
     while True:
         # Update user events
-        event, values = window.read(timeout=TIMEOUT_GUI_MS)
+        event, values = window.read(timeout=TIMEOUT_SERVER_MS)
         # If user closes the window, send message to all processes
         if event == sg.WINDOW_CLOSED:
             if (queue_exit.full() == False):  
@@ -223,8 +224,7 @@ def gui_main( queue_2_car:Queue(1), queue_from_car:Queue(1),
             _control_update(window, False, True)
         # Update button status and check input
         input_is_valid = _check_input(window)
-        server_is_ok = True if time_ms_from_last_update < TIMEOUT_GUI_MS \
-            else False
+        server_is_ok = True if time_ms_from_last_update < TIMEOUT_SERVER_MS else False
         if input_is_valid and server_is_ok:
             window[CTRL_SEND_BUT_KEY].update(disabled=False)
         else:
@@ -236,16 +236,17 @@ def gui_main( queue_2_car:Queue(1), queue_from_car:Queue(1),
         # Update info coming from car (Telemetry section) and Last connection
         if (queue_from_car.empty() == False):
             message = CommunMessages.decode_in_message(queue_from_car.get())
-            window[TLMT_WORKM_OUT_KEY].Update(message.get_workmode_str())
-            window[TLMT_MAN_OY_OUT_KEY].Update(message.manctrly_perc)
-            window[TLMT_MAN_OX_OUT_KEY].Update(message.manctrlx_perc)
-            window[TLMT_AUT_OY_OUT_KEY].Update(message.autctrl_speedy_mms)
-            window[TLMT_AUT_OX_OUT_KEY].Update(message.autctrl_speedx_mms)
-            window[TLMT_LINSP_OUT_KEY].Update(message.linspeed_mms)
-            window[TLMT_WHESP_L_OUT_KEY].Update(message.lspeed_rpm)
-            window[TLMT_WHESP_R_OUT_KEY].Update(message.rspeed_rpm)
-            window[TLMT_DIST_L_OUT_KEY].Update(message.ldist_mm)
-            window[TLMT_DIST_R_OUT_KEY].Update(message.rdist_mm)
+            if message != None:
+                window[TLMT_WORKM_OUT_KEY].Update(message.get_workmode_str() if message.workmode_err==False else "Error")
+                window[TLMT_MAN_OY_OUT_KEY].Update(message.manctrly_perc if message.manctrly_err==False else "Error")
+                window[TLMT_MAN_OX_OUT_KEY].Update(message.manctrlx_perc if message.manctrlx_err==False else "Error")
+                window[TLMT_AUT_OY_OUT_KEY].Update(message.autctrl_speedy_mms if message.autctrl_speedy_err==False else "Error")
+                window[TLMT_AUT_OX_OUT_KEY].Update(message.autctrl_speedx_mms if message.autctrl_speedx_err==False else "Error")
+                window[TLMT_LINSP_OUT_KEY].Update(message.linspeed_mms if message.linspeed_err==False else "Error")
+                window[TLMT_WHESP_L_OUT_KEY].Update(message.lspeed_rpm if message.lspeed_err==False else "Error")
+                window[TLMT_WHESP_R_OUT_KEY].Update(message.rspeed_rpm if message.rspeed_err==False else "Error")
+                window[TLMT_DIST_L_OUT_KEY].Update(message.ldist_mm if message.ldist_err==False else "Error")
+                window[TLMT_DIST_R_OUT_KEY].Update(message.rdist_mm if message.rdist_err==False else "Error")
             window[CONNECTION_ST_KEY].Update(
                 value = "Connected < " + str(TIMEOUT_GUI_MS) + "ms",
                 text_color = "white")
