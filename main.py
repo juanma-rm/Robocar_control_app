@@ -67,4 +67,4 @@ if __name__ == '__main__':
         # Print incoming data
         # if (queue_from_car.full() == False):
         #     print(queue_2_car.get())
-        time.sleep(0.01)
+        time.sleep(0.1)

@@ -142,9 +142,13 @@ def run_server( server_state_out:Value, queue_from_car:Queue(1),
                     if (queue_from_car.full() == True):
                         queue_from_car.empty()  # Only most recent data is valid
                     queue_from_car.put(queue_elem)
+                    # Send ack back
+                    ack_msg = bytes("ack", 'utf-8')
+                    connection.sendall(ack_msg)
                     if DEBUG_EN:
                         received_str = ""
-                        for i in range(0,len(queue_elem),5):
+                        # for i in range(0,len(queue_elem),5):
+                        for i in range(0,5*10,5):
                             received_str += queue_elem[i:i+5] + ','
                         print('Server / received: ' + received_str)
                 # Send data from queue
@@ -155,9 +159,10 @@ def run_server( server_state_out:Value, queue_from_car:Queue(1),
                         sent_str = ""
                         for i in range(0,len(data_2_send.decode()),5):
                             sent_str += data_2_send.decode()[i:i+5] + ','
-                        print("Server / sent: " + sent_str) 
+                        print("Server / sent: " + sent_str)
+                    
         # Timeout. Wait for new conection
-        except:
+        except Exception as e:
             _close_connection(connection, server_state_out) 
 
             
