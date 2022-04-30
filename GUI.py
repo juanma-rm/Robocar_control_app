@@ -135,9 +135,7 @@ def _send_message(window:sg.Window, queue_2_car:Queue(1)):
     autctrl_speedx_mms = 0
 
     if window[CTRL_WORKM_STOP_IN_KEY].get():
-        workmode_str = "Manual mode"
-        manctrly_perc = 0
-        manctrlx_perc = 0
+        workmode_str = "Stop mode"
     elif window[CTRL_WORKM_MAN_IN_KEY].get():
         workmode_str = "Manual mode"
         manctrly_perc = int(window[CTRL_MAN_OY_IN_KEY].get())
