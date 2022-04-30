@@ -9,6 +9,7 @@
 # Import
 #==============================================================================
 
+import numpy as np
 
 #==============================================================================
 # Protocol information
@@ -72,16 +73,20 @@ incoming_pos_dic = {
 }
 def get_workmode_id(mode_str:str) -> int:
     ret_val = -1
-    if mode_str == "Manual mode":
+    if mode_str == "Stop mode":
         ret_val = 0
-    elif mode_str == "Automatic mode":
+    elif mode_str == "Manual mode":
         ret_val = 1
+    elif mode_str == "Automatic mode":
+        ret_val = 2
     return ret_val
 def get_workmode_name(mode_int:int) -> str:
     ret_val = "invalid mode name"
     if mode_int == 0:
-        ret_val = "Manual mode"
+        ret_val = "Stop mode"
     elif mode_int == 1:
+        ret_val = "Manual mode"
+    elif mode_int == 2:
         ret_val = "Automatic mode"
     return ret_val
 
@@ -111,7 +116,7 @@ class Message_struct_in():
     ===========================================================================
     Attributes
     ===========================================================================
-    - workmode: int. 0: manual. 1: automatic. Other: error
+    - workmode: int. 0: stop. 1: manual. 2: automatic. Other: error
     - workmode_err: bool. True if error in workmode value
     - manctrly_perc: int [-100,100]
     - manctrly_err: bool. True if error in manctrly_perc value
@@ -146,62 +151,62 @@ class Message_struct_in():
         self.workmode = None
         if _str_is_number(workmode):
             self.workmode = int(workmode)
-        if (self.workmode==0 or self.workmode==1):
+        if (self.workmode==0 or self.workmode==1 or self.workmode==2):
             self.workmode_err = False
         else:
             self.workmode_err = True
         # manctrly_perc
         self.manctrly_perc = None
         if _str_is_number(manctrly_perc):
-            self.manctrly_perc = int(manctrly_perc)
+            self.manctrly_perc = np.int16(manctrly_perc)
         self.manctrly_err = False if (self.manctrly_perc >= -100 or self.manctrly_perc <= 100) \
             else True
         # manctrlx_perc
         self.manctrlx_perc = None
         if _str_is_number(manctrlx_perc):
-            self.manctrlx_perc = int(manctrlx_perc)
+            self.manctrlx_perc = np.int16(manctrlx_perc)
         self.manctrlx_err = False if (self.manctrlx_perc >= -100 or self.manctrlx_perc <= 100) \
             else True
         # autctrl_speedy_mms
         self.autctrl_speedy_mms = None
         if _str_is_number(autctrl_speedy_mms):
-            self.autctrl_speedy_mms = int(autctrl_speedy_mms)
+            self.autctrl_speedy_mms = np.int16(autctrl_speedy_mms)
         self.autctrl_speedy_err = True if (self.autctrl_speedy_mms==INT16_MIN or self.autctrl_speedy_mms==None) \
             else False
         # autctrl_speedx_mms
         self.autctrl_speedx_mms = None
         if _str_is_number(autctrl_speedx_mms):
-            self.autctrl_speedx_mms = int(autctrl_speedx_mms)
+            self.autctrl_speedx_mms = np.int16(autctrl_speedx_mms)
         self.autctrl_speedx_err = True if (self.autctrl_speedx_mms==INT16_MIN or self.autctrl_speedx_mms==None) \
             else False
         # linspeed_mms
         self.linspeed_mms = None
         if _str_is_number(linspeed_mms):
-            self.linspeed_mms = int(linspeed_mms)
+            self.linspeed_mms = np.int16(linspeed_mms)
         self.linspeed_err = True if (self.linspeed_mms==INT16_MIN or self.linspeed_mms==None) \
             else False
         # lspeed_rpm
         self.lspeed_rpm = None
         if _str_is_number(lspeed_rpm):
-            self.lspeed_rpm = int(lspeed_rpm)
+            self.lspeed_rpm = np.int16(lspeed_rpm)
         self.lspeed_err = True if (self.lspeed_rpm==INT16_MIN or self.lspeed_rpm==None) \
             else False
         # rspeed_rpm
         self.rspeed_rpm = None
         if _str_is_number(rspeed_rpm):
-            self.rspeed_rpm = int(rspeed_rpm)
+            self.rspeed_rpm = np.int16(rspeed_rpm)
         self.rspeed_err = True if (self.rspeed_rpm==INT16_MIN or self.rspeed_rpm==None) \
             else False
         # ldist_mm
         self.ldist_mm = None
         if _str_is_number(ldist_mm):
-            self.ldist_mm = int(ldist_mm)
+            self.ldist_mm = np.int16(ldist_mm)
         self.ldist_err = True if (self.ldist_mm==UINT16_MAX or self.ldist_mm==None) \
             else False
         # rdist_mm
         self.rdist_mm = None
         if _str_is_number(rdist_mm):
-            self.rdist_mm = int(rdist_mm)
+            self.rdist_mm = np.int16(rdist_mm)
         self.rdist_err = True if (self.rdist_mm==UINT16_MAX or self.rdist_mm==None) \
             else False
 
@@ -223,7 +228,7 @@ class Message_struct_out():
     ===========================================================================
     Attributes
     ===========================================================================
-    - workmode: int. 0: manual. 1: automatic. Other: error
+    - workmode: int. 0: stop. 1: manual. 1: automatic. Other: error
     - workmode_err: bool. True if error in workmode value
     - manctrly_perc: int [-100,100]
     - manctrly_err: bool. True if error in manctrly_perc value
