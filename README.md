@@ -15,7 +15,7 @@ https://github.com/juanma-rm/Robocar_SWP
     * {OY=100%, OX=100%} results in turning right on site
     * {OY=100%, OX=-100%} results in turning left on site
     * {OY=100%, OX=50%} results in going straigth forward slowing down right motor to 50% of the straight speed (therefore, turning right slightly).
-  * Automatic mode: lineal speed setpoint for automatic control PID-based control. Not implemented yet in Main Control System.
+  * Automatic mode: linear speed setpoint for automatic control PID-based control. Not implemented yet in Main Control System.
 * Telemetry: shows information about the last status received from the car (workmode, last command received, current speed, current distance detected by ultrasonics sensors).
 
 Screenshot:\
